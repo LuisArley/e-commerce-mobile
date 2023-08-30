@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'info.dart';
+
 // import 'Regist.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,21 +13,60 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+// class _LoginPageState extends State<LoginPage> {
+//   TextEditingController usernameController = TextEditingController();
+//   TextEditingController passwordController = TextEditingController();
+
+//   String desiredUsername = "user";
+//   String desiredPassword = "user";
+
+//   Future<List> () async {
+
+//       final response = await http.post("http://192.168.0.16/login_api/view.php" as Uri, body: {
+
+//     // var url = "http://192.168.0.16/login_api/view.php ";
+//     // var response = await http.post(url as Uri, body: {
+//       "username": usernameController.text,
+//       "password": passwordController.text,
+
+//     });
+
+//     // return json.decode(response.body);
+//     var datauser = json.decode(response.body);
+
+//   }
+
 class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  String desiredUsername = "user";
-  String desiredPassword = "user";
-
   Future login() async {
-    var url = "https://api-android.herokuapp.com/";
+    var url = Uri.parse("http://192.168.0.7/login_api/create.php ");
     var response = await http.post(url as Uri, body: {
       "username": usernameController.text,
-      'password': passwordController.text,
+      "password": passwordController.text,
     });
-
     var data = json.decode(response.body);
+    if (data.toString() == "Success") {
+      Fluttertoast.showToast(
+        msg: 'Login Successful',
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        toastLength: Toast.LENGTH_SHORT,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InfoPage(),
+        ),
+      );
+    } else {
+      Fluttertoast.showToast(
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        msg: 'Username and password invalid',
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    }
   }
 
   @override
@@ -102,27 +143,6 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginBtn() {
     return ElevatedButton(
-      onPressed: () {
-        String enteredUsername = usernameController.text;
-        String enteredPassword = passwordController.text;
-
-        // Aquí puedes agregar la lógica de validación de usuario y contraseña.
-        // Por ejemplo, comparar con valores predefinidos.
-        if (enteredUsername == desiredUsername &&
-            enteredPassword == desiredPassword) {
-          // Acceso permitido - realizar alguna acción, como navegación a otra pantalla.
-          debugPrint("Acceso permitido");
-          Navigator.pushNamed(context, '/InfoPage');
-          // Agregar aquí la navegación a la siguiente pantalla, por ejemplo:
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => NextScreen()));
-        } else {
-          // Acceso denegado - mostrar mensaje de error.
-          debugPrint("Credenciales incorrectas");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Credenciales incorrectas')),
-          );
-        }
-      },
       child: const SizedBox(
         width: double.infinity,
         child: Text(
@@ -137,6 +157,10 @@ class _LoginPageState extends State<LoginPage> {
         onPrimary: Color.fromARGB(255, 100, 3, 174),
         padding: const EdgeInsets.symmetric(vertical: 16),
       ),
+      onPressed: () {
+        // Llamar a la función de inicio de sesión cuando se presione el botón.
+        login(); // Llama a la función login() que ya definiste.
+      },
     );
   }
 
